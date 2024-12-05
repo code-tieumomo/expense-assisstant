@@ -16,7 +16,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-black text-white/50">
+<body class="font-sans antialiased bg-black text-white/50 overflow-hidden">
     <div class="bg-black text-white/50">
         <img id="background" class="absolute -left-20 top-0 max-w-[877px]"
             src="https://laravel.com/assets/img/welcome/background.svg" alt="Laravel background" />
@@ -27,7 +27,8 @@
                     <div id="docs-card"
                         class="h-full w-full flex flex-col items-start gap-6 rounded-lg p-4 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 transition duration-300 focus:outline-none bg-zinc-900 ring-zinc-800 hover:text-white/70 hover:ring-zinc-700 focus-visible:ring-[#FF2D20]">
                         <ul id="list"
-                            class="grow space-y-4 w-full overflow-x-hidden overflow-y-auto scroll-smooth"></ul>
+                            class="scrollbar-hide grow space-y-4 w-full overflow-x-hidden overflow-y-auto scroll-smooth">
+                        </ul>
                         <form x-data="chat" x-on:submit="submit"
                             class="w-full flex items-end rounded-lg shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 transition duration-300 ring-zinc-800 hover:ring-zinc-700 focus-visible:ring-[#FF2D20] p-2">
                             <textarea rows="1" class="grow bg-transparent focus:outline-none text-sm resize-none" placeholder="Nhập ở đây ..."
@@ -49,8 +50,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('chat', () => ({
-                messages: [
-                    {
+                messages: [{
                         id: 1,
                         content: 'Ăn bún hết 25k',
                         isBot: false
@@ -74,7 +74,7 @@
                             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
                             this.parentNode.previousElementSibling.style.maxHeight =
                                 'calc(100% - ' + (Math.min(this.scrollHeight, 120) +
-                                30) + 'px)';
+                                    30) + 'px)';
                         });
                     });
 
@@ -94,21 +94,21 @@
                             li.id = 'message-' + message.id;
                             li.innerHTML = message.isBot ?
                                 `
-                                                <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
-                                                    $
-                                                </div>
-                                                <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
-                                                    ${message.content}
-                                                </div>
-                                            ` :
+                                    <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
+                                        $
+                                    </div>
+                                    <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
+                                        ${message.content}
+                                    </div>
+                                ` :
                                 `
-                                                <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
-                                                    ${message.content}
-                                                </div>
-                                                <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
-                                                    U
-                                                </div>
-                                            `;
+                                    <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
+                                        ${message.content}
+                                    </div>
+                                    <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
+                                        U
+                                    </div>
+                                `;
                             this.list.appendChild(li);
                         } else {
                             if (prevItem) {
@@ -123,7 +123,7 @@
                     this.list.scrollTop = this.list.scrollHeight;
                 },
 
-                submit(e) {
+                async submit(e) {
                     e.preventDefault();
                     if (this.message.trim() === '') {
                         return;
@@ -135,19 +135,32 @@
                         isBot: false
                     });
 
+                    const lastMessage = this.message;
                     this.message = '';
 
                     this.render();
 
-                    setTimeout(() => {
-                        this.messages.push({
-                            id: this.messages.length + 1,
-                            content: 'Đã ghi nhận',
-                            isBot: true
-                        });
+                    const response = await fetch(
+                        '/api/chat',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                message: lastMessage
+                            })
+                        }
+                    );
+                    const transaction = await response.json();
+                    this.messages.push({
+                        id: this.messages.length + 1,
+                        content: `Đã ghi nhận giao dịch ${transaction.type} (${transaction.category}). Tổng cộng ${transaction.amount.toLocaleString()} VND`,
+                        isBot: true
+                    });
 
-                        this.render();
-                    }, 1000);
+                    this.render();
                 }
             }))
         })
