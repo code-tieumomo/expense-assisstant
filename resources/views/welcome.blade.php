@@ -26,111 +26,12 @@
                 <main class="h-full w-full">
                     <div id="docs-card"
                         class="h-full w-full flex flex-col items-start gap-6 rounded-lg p-4 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 transition duration-300 focus:outline-none bg-zinc-900 ring-zinc-800 hover:text-white/70 hover:ring-zinc-700 focus-visible:ring-[#FF2D20]">
-                        <ul id="list" class="grow space-y-4 w-full overflow-x-hidden overflow-y-auto scroll-smooth"></ul>
-                        <form x-data="{
-                            messages: [
-                                {
-                                    id: 1,
-                                    content: 'Ăn bún hết 25k',
-                                    isBot: false
-                                },
-                                {
-                                    id: 2,
-                                    content: 'Đã ghi nhận giao dịch, cảm ơn bạn!',
-                                    isBot: true
-                                }
-                            ],
-                            message: '',
-                            list: null,
-
-                            init() {
-                                document.querySelectorAll('textarea').forEach(function(textarea) {
-                                    textarea.style.height = textarea.scrollHeight + 'px';
-                                    textarea.style.overflowY = 'hidden';
-                        
-                                    textarea.addEventListener('input', function() {
-                                        this.style.height = 'auto';
-                                        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-                                        this.parentNode.previousElementSibling.style.maxHeight = 'calc(100% - ' + (Math.min(this.scrollHeight, 120) + 30) + 'px)';
-                                    });
-                                });
-
-                                this.list = document.getElementById('list');
-
-                                this.render();
-                            },
-
-                            render() {
-                                let prevItem;
-                                this.messages.forEach((message) => {
-                                    let li = document.getElementById('message-' + message.id);
-                                    if (!li) {
-                                        li = document.createElement('li');
-                                        li.className = 'w-full flex items-baseline gap-2' + (!message.isBot ? ' justify-end' : '');
-                                        li.id = 'message-' + message.id;
-                                        li.innerHTML = message.isBot ?
-                                            `
-                                                <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
-                                                    B
-                                                </div>
-                                                <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
-                                                    ${message.content}
-                                                </div>
-                                            ` :
-                                            `
-                                                <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
-                                                    ${message.content}
-                                                </div>
-                                                <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
-                                                    U
-                                                </div>
-                                            `;
-                                        this.list.appendChild(li);
-                                    } else {
-                                        if (prevItem) {
-                                            prevItem.after(li);
-                                        } else {
-                                            this.list.prepend(li);
-                                        }
-                                    }
-                                    prevItem = li;
-                                });
-
-                                this.list.scrollTop = this.list.scrollHeight;
-                            },
-
-                            submit(e) {
-                                e.preventDefault();
-                                if (this.message.trim() === '') {
-                                    return;
-                                }
-
-                                this.messages.push({
-                                    id: this.messages.length + 1,
-                                    content: this.message,
-                                    isBot: false
-                                });
-
-                                this.message = '';
-
-                                this.render();
-
-                                setTimeout(() => {
-                                    this.messages.push({
-                                        id: this.messages.length + 1,
-                                        content: 'Đã ghi nhận',
-                                        isBot: true
-                                    });
-
-                                    this.render();
-                                }, 1000);
-                            }
-                        }" 
-                            x-on:submit="submit"
-                            class="w-full flex items-end rounded-lg shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 transition duration-300 ring-zinc-800 hover:ring-zinc-700 focus-visible:ring-[#FF2D20] p-2"
-                        >
-                            <textarea rows="1" class="grow bg-transparent focus:outline-none text-sm resize-none"
-                                placeholder="Nhập ở đây ..." x-model="message"></textarea>
+                        <ul id="list"
+                            class="grow space-y-4 w-full overflow-x-hidden overflow-y-auto scroll-smooth"></ul>
+                        <form x-data="chat" x-on:submit="submit"
+                            class="w-full flex items-end rounded-lg shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 transition duration-300 ring-zinc-800 hover:ring-zinc-700 focus-visible:ring-[#FF2D20] p-2">
+                            <textarea rows="1" class="grow bg-transparent focus:outline-none text-sm resize-none" placeholder="Nhập ở đây ..."
+                                x-model="message"></textarea>
                             <button type="submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 14 14">
                                     <path fill="currentColor" fill-rule="evenodd"
@@ -144,6 +45,113 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('chat', () => ({
+                messages: [
+                    {
+                        id: 1,
+                        content: 'Ăn bún hết 25k',
+                        isBot: false
+                    },
+                    {
+                        id: 2,
+                        content: 'Đã ghi nhận giao dịch, cảm ơn bạn!',
+                        isBot: true
+                    }
+                ],
+                message: '',
+                list: null,
+
+                init() {
+                    document.querySelectorAll('textarea').forEach(function(textarea) {
+                        textarea.style.height = textarea.scrollHeight + 'px';
+                        textarea.style.overflowY = 'hidden';
+
+                        textarea.addEventListener('input', function() {
+                            this.style.height = 'auto';
+                            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                            this.parentNode.previousElementSibling.style.maxHeight =
+                                'calc(100% - ' + (Math.min(this.scrollHeight, 120) +
+                                30) + 'px)';
+                        });
+                    });
+
+                    this.list = document.getElementById('list');
+
+                    this.render();
+                },
+
+                render() {
+                    let prevItem;
+                    this.messages.forEach((message) => {
+                        let li = document.getElementById('message-' + message.id);
+                        if (!li) {
+                            li = document.createElement('li');
+                            li.className = 'w-full flex items-baseline gap-2' + (!message
+                                .isBot ? ' justify-end' : '');
+                            li.id = 'message-' + message.id;
+                            li.innerHTML = message.isBot ?
+                                `
+                                                <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
+                                                    $
+                                                </div>
+                                                <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
+                                                    ${message.content}
+                                                </div>
+                                            ` :
+                                `
+                                                <div class='p-2 bg-zinc-800 rounded-lg text-sm'>
+                                                    ${message.content}
+                                                </div>
+                                                <div class='shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#FF2D20] text-white text-xs'>
+                                                    U
+                                                </div>
+                                            `;
+                            this.list.appendChild(li);
+                        } else {
+                            if (prevItem) {
+                                prevItem.after(li);
+                            } else {
+                                this.list.prepend(li);
+                            }
+                        }
+                        prevItem = li;
+                    });
+
+                    this.list.scrollTop = this.list.scrollHeight;
+                },
+
+                submit(e) {
+                    e.preventDefault();
+                    if (this.message.trim() === '') {
+                        return;
+                    }
+
+                    this.messages.push({
+                        id: this.messages.length + 1,
+                        content: this.message,
+                        isBot: false
+                    });
+
+                    this.message = '';
+
+                    this.render();
+
+                    setTimeout(() => {
+                        this.messages.push({
+                            id: this.messages.length + 1,
+                            content: 'Đã ghi nhận',
+                            isBot: true
+                        });
+
+                        this.render();
+                    }, 1000);
+                }
+            }))
+        })
+    </script>
 </body>
 
 </html>
