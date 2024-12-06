@@ -21,8 +21,8 @@
         <img id="background" class="absolute -left-20 top-0 max-w-[877px]"
             src="https://laravel.com/assets/img/welcome/background.svg" alt="Laravel background" />
         <div
-            class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
-            <div class="relative w-full max-w-2xl p-4 h-screen lg:max-w-7xl">
+            class="relative min-h-dvh flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
+            <div class="relative w-full max-w-2xl p-4 h-dvh lg:max-w-7xl">
                 <main class="h-full w-full">
                     <div id="docs-card"
                         class="h-full w-full flex flex-col items-start gap-6 rounded-lg p-4 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 transition duration-300 focus:outline-none bg-zinc-900 ring-zinc-800 hover:text-white/70 hover:ring-zinc-700 focus-visible:ring-[#FF2D20]">
@@ -50,17 +50,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('chat', () => ({
-                messages: [{
-                        id: 1,
-                        content: 'Ăn bún hết 25k',
-                        isBot: false
-                    },
-                    {
-                        id: 2,
-                        content: 'Đã ghi nhận giao dịch, cảm ơn bạn!',
-                        isBot: true
-                    }
-                ],
+                messages: [],
                 message: '',
                 list: null,
 
