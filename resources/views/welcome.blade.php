@@ -144,11 +144,7 @@
                         }
                     );
                     const transaction = await response.json();
-                    this.messages.push({
-                        id: this.messages.length + 1,
-                        content: `Đã ghi nhận giao dịch ${transaction.type} (${transaction.category}). Tổng cộng ${transaction.amount.toLocaleString()} VND`,
-                        isBot: true
-                    });
+                    this.messages.push(transaction);
 
                     this.render();
                 }
